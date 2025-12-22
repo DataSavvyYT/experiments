@@ -1,5 +1,7 @@
 name: Clean Notebook Metadata
-on: [push]
+on: 
+  push:
+  workflow_dispatch:
 jobs:
   clean:
     runs-on: ubuntu-latest
