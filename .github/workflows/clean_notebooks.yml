@@ -1,19 +1,32 @@
-name: Clean Notebook Metadata
-on: 
+name: Fix Colab Render Error
+on:
   push:
-  workflow_dispatch:
+    paths:
+      - '**.ipynb' # Only runs when a notebook file is modified
+  workflow_dispatch: # Allows you to run this manually for old files
+
 jobs:
-  clean:
+  clean-metadata:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for the action to push fixes back to your repo
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install nbstripout
         run: pip install nbstripout
-      - name: Clean notebooks
-        run: nbstripout *.ipynb
-      - name: Commit changes
+
+      - name: Remove problematic widget metadata
+        # Strips only the metadata keys that cause the GitHub rendering crash
+        run: nbstripout --extra-keys "metadata.widgets" **/*.ipynb
+
+      - name: Commit and Push Fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Automated: remove notebook metadata causing render error"
+          commit_message: "Automated: removed widget metadata to fix rendering"
