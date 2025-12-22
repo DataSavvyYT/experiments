@@ -25,7 +25,7 @@ jobs:
       - name: Remove problematic widget metadata
         # Strips only the metadata keys that cause the GitHub rendering crash
         run: nbstripout --extra-keys "metadata.widgets" **/*.ipynb
-
+        
       - name: Commit and Push Fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
