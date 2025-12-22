@@ -2,14 +2,14 @@ name: Fix Colab Render Error
 on:
   push:
     paths:
-      - '**.ipynb' # Only runs when a notebook file is modified
-  workflow_dispatch: # Allows you to run this manually for old files
+      - '**.ipynb'
+  workflow_dispatch:
 
 jobs:
   clean-metadata:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Required for the action to push fixes back to your repo
+      contents: write # Crucial for pushing changes back
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -23,10 +23,14 @@ jobs:
         run: pip install nbstripout
 
       - name: Remove problematic widget metadata
-        # Strips only the metadata keys that cause the GitHub rendering crash
         run: nbstripout --extra-keys "metadata.widgets" **/*.ipynb
-        
+
       - name: Commit and Push Fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automated: removed widget metadata to fix rendering"
+          # Optional: explicitly set author to avoid identity errors
+          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          # Prevents the "Status Code 1" error if there are no changes to commit
+          skip_dirty_check: false    
+          skip_fetch: true          
