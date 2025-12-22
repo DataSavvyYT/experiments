@@ -1,0 +1,17 @@
+name: Clean Notebook Metadata
+on: [push]
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+      - name: Install nbstripout
+        run: pip install nbstripout
+      - name: Clean notebooks
+        run: nbstripout *.ipynb
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Automated: remove notebook metadata causing render error"
